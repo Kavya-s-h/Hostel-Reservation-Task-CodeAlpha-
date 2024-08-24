@@ -1,0 +1,94 @@
+User Class
+Java
+
+public class User {
+    private int id;
+    private String username;
+    private String password;
+    private String email;
+
+    // Getters and Setters
+}
+
+
+Room Class
+Java
+
+public class Room {
+    private int id;
+    private String type;
+    private double price;
+    private boolean availability;
+
+    // Getters and Setters
+}
+
+
+Reservation Class
+Java
+
+public class Reservation {
+    private int id;
+    private int userId;
+    private int roomId;
+    private Date checkInDate;
+    private Date checkOutDate;
+
+    // Getters and Setters
+}
+
+
+Payment Class
+Java
+
+public class Payment {
+    private int id;
+    private int reservationId;
+    private double amount;
+    private Date paymentDate;
+
+    // Getters and Setters
+}
+
+import java.sql.*;
+import java.util.Scanner;
+
+public class HotelReservationSystem {
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/hotel";
+    private static final String USER = "root";
+    private static final String PASS = "password";
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter check-in date (YYYY-MM-DD): ");
+        String checkInDate = scanner.nextLine();
+        System.out.println("Enter check-out date (YYYY-MM-DD): ");
+        String checkOutDate = scanner.nextLine();
+        System.out.println("Enter room type (Single, Double, Suite): ");
+        String roomType = scanner.nextLine();
+
+        searchAvailableRooms(checkInDate, checkOutDate, roomType);
+    }
+
+    public static void searchAvailableRooms(String checkInDate, String checkOutDate, String roomType) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             Statement stmt = conn.createStatement()) {
+
+            String sql = "SELECT * FROM rooms WHERE type = '" + roomType + "' AND availability = true";
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String type = rs.getString("type");
+                double price = rs.getDouble("price");
+                boolean availability = rs.getBoolean("availability");
+
+                System.out.println("Room ID: " + id + ", Type: " + type + ", Price: " + price + ", Available: " + availability);
+            }
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
